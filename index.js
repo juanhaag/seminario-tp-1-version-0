@@ -1,10 +1,10 @@
 import express from 'express';
-
+import {pool} from './app/db/db.js';
+import userRouter from './app/routes/userRoutes.js';
+import bodyParser from 'body-parser';
 const app = express();
 const PORT = 3000;
-
-app.get('/ping',(req,res)=>{
-    res.send('pong');
-})
+app.use(bodyParser.json());
+app.use(userRouter);
 app.listen(PORT);
 console.log(`Server running on port ${PORT}`);
