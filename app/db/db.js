@@ -4,7 +4,7 @@ export const pool = createPool(
     {
         host: 'localhost',
         user: 'root',
-        password: '',
+        password: 'root',
         database: 'seminario',
         port: 3306
     }

@@ -33,3 +33,32 @@ CREATE TABLE groups_actions(
   FOREIGN KEY (group_id) REFERENCES groups(id),
   FOREIGN KEY (action_id) REFERENCES actions(id)
 );
+
+INSERT INTO users (name, email, password) VALUES 
+  ('John Doe', 'john.doe@example.com', 'password123'),
+  ('Jane Smith', 'jane.smith@example.com', 'password456'),
+  ('Mike Johnson', 'mike.johnson@example.com', 'password789');
+
+INSERT INTO groups (name) VALUES 
+  ('Admin'),
+  ('Editor'),
+  ('Viewer');
+
+INSERT INTO actions (name) VALUES 
+  ('Create'),
+  ('Read'),
+  ('Update'),
+  ('Delete');
+
+INSERT INTO users_groups (user_id, group_id) VALUES 
+  (1, 1),
+  (2, 2),
+  (3, 3);
+
+INSERT INTO groups_actions (group_id, action_id) VALUES 
+  (1, 1),
+  (2, 2),
+  (3, 3),
+  (1, 4),
+  (2, 4),
+  (3, 2);

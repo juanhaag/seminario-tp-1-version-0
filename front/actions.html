@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Actions</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Usuarios</a></li>
+                <li><a href="groups.html">Grupos</a></li>
+                <li><a href="actions.html">Acciones</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="group-form">
+      <h2>Crear Acciones</h2>
+      <form id="form-action">
+        <label for="action-name">Nombre de la Accion:</label>
+        <input type="text" id="action-name" name="action-name" required>
+        <button type="submit">Crear Accion</button>
+      </form>
+      <p id="error-action" class="error"></p>
+      <p id="action-created"></p>
+    </section>
+    
+    <section>
+        <ul id="list-action">
+        </ul>
+      </section>
+      <section class="group-form">
+        <h2>Aignar usuarios a grupos</h2>
+        <form id="form-group-actions">
+          <label for="group-name">Nombre del Grupo:</label>
+          <select name="group-name" id="group-select"></select>
+            <label for="action-name">Nombre de Accion:</label>
+            <select name="action-name" id="action-select"></select>
+          <button type="submit">Asignar accion a Grupo</button>
+        </form>
+        <p id="error-group-action" class="error"></p>
+        <p id="action-group-created"></p>
+      </section>
+      <section>
+        <ul id="list-action-group">
+        </ul>
+      </section>
+    <script>
+        const listActions = document.querySelector("#list-action");
+        const formAction = document.querySelector("#form-action");
+        const formGroupActions = document.querySelector("#form-group-actions");
+        const groupSelect = document.querySelector("#group-select");
+        const actionSelect = document.querySelector("#action-select");
+        window.addEventListener("load", async () => {
+            await fetch("http://localhost:3001/action")
+            .then((response) => response.json())
+            .then((data) => {
+                data.forEach((action) => {
+                const li = document.createElement("li");
+                li.innerHTML = `${action.name}`;
+                const option = document.createElement("option");
+                option.innerHTML = `${action.name}`;
+                option.value = `${action.id}`;
+                actionSelect.appendChild(option);
+                listActions.appendChild(li);
+                });
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+
+        });
+        formGroupActions.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const formData = new FormData(formGroupActions);
+            const groupName = formData.get("group-name");
+            const actionName = formData.get("action-name");
+            await fetch("http://localhost:3001/group_action", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ groupId: groupName, actionId: actionName }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        document.getElementById("error-group-action").textContent = `${data.error} `;
+                    } else {
+                        const li = document.createElement("li");
+                    li.innerHTML = `${data.name}`;
+                    listActions.appendChild(li);
+                    document.querySelector("#action-group-created").textContent = "Accion asignada al grupo";                    }
+                    
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    document.querySelector("#error-group-action").textContent = "Error al asignar la accion al grupo";
+                });
+            });
+        //Window load de las opciones para el select
+        window.addEventListener("load", async () => {
+            await fetch("http://localhost:3001/groups")
+            .then((response) => response.json())
+            .then((data) => {
+                data.forEach((group) => {
+                const option = document.createElement("option");
+                option.innerHTML = `${group.name}`;
+                option.value = `${group.id}`;
+                groupSelect.appendChild(option);
+                });
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+        });
+        formAction.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const formData = new FormData(formAction);
+            const actionName = formData.get("action-name");
+            await fetch("http://localhost:3001/action", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name: actionName }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        document.getElementById("error-action").textContent = `${data.error} `;
+                    } else {
+                        const li = document.createElement("li");
+                    li.innerHTML = `${data.name}`;
+                    listActions.appendChild(li);
+                    document.querySelector("#action-created").textContent = "Accion creado";                    }
+                    
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    document.querySelector("#error-action").textContent = "Error al crear la accion";
+                });
+            });
+    </script>
+</body>
+</html>

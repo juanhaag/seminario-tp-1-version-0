@@ -5,6 +5,9 @@ const userRouter = Router();
 userRouter.get("/user", (req, res) => {
     userController.getUsers(req,res);
 })
+userRouter.post("/user/group/actions", (req, res) => {
+    userController.getUserGroupsAndActions(req,res);
+})
 userRouter.get("/user/:pid", (req, res) => {
     userController.getUser(req,res);
 })

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Formularios</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Inicio</a></li>
+                    <li><a href="groups.html">Grupos</a></li>
+                    <li><a href="actions.html">Acciones</a></li>
+                </ul>
+            </nav>
+        </header>
+      <section class="user-form">
+        <h2>Crear Usuario</h2>
+        <form id="user-form">
+          <label for="name">Nombre:</label>
+          <input type="text" id="name" name="name" required />
+          <label for="password">Contraseña:</label>
+          <input type="password" id="password" name="password" required />
+          <label for="email">Email:</label>
+          <input type="email" id="email" name="email" required />
+          <button type="submit">Crear Usuario</button>
+        </form>
+        <p id="error-user" class="error"></p>
+        <p id="user-created"></p>
+      </section>
+      <section>
+        <ul id="list-users">
+
+        </ul>
+      </section>
+
+    </div>
+    <script>
+        const listUsers = document.querySelector("#list-users");
+      const formUser = document.querySelector("#user-form");
+        window.addEventListener("load", async () => {
+          await fetch("http://localhost:3001/user")
+            .then((response) => response.json())
+            .then((data) => {
+              data.forEach((user) => {
+                const li = document.createElement("li");
+                li.innerHTML = `${user.name} - ${user.email}`;
+                listUsers.appendChild(li);
+              });
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+
+
+      formUser.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const formData = new FormData(formUser);
+        await fetch("http://localhost:3001/user", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.get("email"),
+            name: formData.get("name"),
+            password: formData.get("password"),
+          }),
+        })
+          .then( (response) =>  response.json())
+          .then( (data) => {
+            console.log( data);
+            if (data.error) {
+              document.getElementById(
+                "error-user"
+              ).innerHTML = `${data.error} `;
+            } else {
+              document.getElementById("user-created").innerHTML = `${data.message} `;
+            }
+          })
+          .catch((error) => {
+            document.getElementById("error-user").innerHTML = `${error} `;
+            console.error("Error:", error);
+          });
+      });
+    </script>
+  </body>
+</html>

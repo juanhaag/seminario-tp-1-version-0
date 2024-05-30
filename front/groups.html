@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Groups</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+        <nav>
+            <ul>
+                <li><a href="index.html">Usuarios</a></li>
+                <li><a href="groups.html">Grupos</a></li>
+                <li><a href="actions.html">Acciones</a></li>
+            </ul>
+        </nav>
+    </header>
+    <section class="group-form">
+      <h2>Crear Grupos</h2>
+      <form id="form-group">
+        <label for="group-name">Nombre del Grupo:</label>
+        <input type="text" id="group-name" name="group-name" required>
+        <button type="submit">Crear Grupo</button>
+      </form>
+      <p id="error-group" class="error"></p>
+      <p id="group-created"></p>
+    </section>
+    <section>
+        <ul id="list-group">
+
+        </ul>
+      </section>
+      <section class="group-form">
+        <h2>Aignar usuarios a grupos</h2>
+        <form id="form-group-users">
+          <label for="group-name">Nombre del Grupo:</label>
+          <select name="group-name" id="group-select"></select>
+            <label for="user-name">Nombre del Usuario:</label>
+            <select name="user-name" id="user-select"></select>
+          <button type="submit">Asignar Grupo</button>
+        </form>
+        <p id="error-group-user" class="error"></p>
+        <p id="user-group-created"></p>
+      </section>
+
+    <script>
+        const listGroups = document.querySelector("#list-group");
+        const formGroup = document.querySelector("#form-group");
+        const formGroupUsers = document.querySelector("#form-group-users");
+        const groupSelect = document.querySelector("#group-select");
+        const userSelect = document.querySelector("#user-select");
+        window.addEventListener("load", async () => {
+            await fetch("http://localhost:3001/groups")
+            .then((response) => response.json())
+            .then((data) => {
+                data.forEach((group) => {
+                const li = document.createElement("li");
+                const option = document.createElement("option");
+                option.innerHTML = `${group.name}`;
+                option.value = `${group.id}`;
+                li.innerHTML = `${group.name}`;
+                listGroups.appendChild(li);
+                groupSelect.appendChild(option);
+                });
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+            });
+            await fetch("http://localhost:3001/user")
+            .then((response) => response.json())
+            .then((data) => {
+              data.forEach((user) => {
+                const option = document.createElement("option");
+                option.innerHTML = `${user.name}`;
+                option.value = `${user.id}`;
+                userSelect.appendChild(option);
+              });
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+            });
+        });
+        formGroupUsers.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const formData = new FormData(formGroupUsers);
+            const groupName = formData.get("group-name");
+            const userName = formData.get("user-name");
+            await fetch("http://localhost:3001/user_group", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId: userName, groupId: groupName }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        document.getElementById("error-group-user").textContent = `${data.error} `;
+                    } else {
+                        document.querySelector("#user-group-created").textContent = `${data.message}`;                    }
+                    
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    document.querySelector("#error-group-user").textContent = "Error al asignar el usuario al grupo";
+                });
+            });
+        formGroup.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const formData = new FormData(formGroup);
+            const groupName = formData.get("group-name");
+            await fetch("http://localhost:3001/group", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name: groupName }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        document.getElementById("error-group").textContent = `${data.error} `;
+                    } else {
+                        const li = document.createElement("li");
+                        const option = document.createElement("option");
+                    li.innerHTML = `${data.name}`;
+                    option.innerHTML = `${data.name}`;
+                    option.value = `${group.id}`;
+                    groupSelect.appendChild(option);
+                    listGroups.appendChild(li);
+                    document.querySelector("#group-created").textContent = "Grupo creado";                    }
+                    
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    document.querySelector("#error-group").textContent = "Error al crear el grupo";
+                });
+            });
+    </script>
+</body>
+</html>
