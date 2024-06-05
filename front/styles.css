@@ -48,6 +48,23 @@ body {
   button:hover {
     background-color: #45a049;
   }
+  ul{
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
 li {
     list-style: none;
+}
+li a {
+    padding: 10px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #333;
+}
+li a:hover {
+    background-color: #e2e2e2;
 }

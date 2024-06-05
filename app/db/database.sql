@@ -22,8 +22,8 @@ CREATE TABLE users_groups(
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT NOT NULL,
   group_id INT NOT NULL,
-  FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (group_id) REFERENCES groups(id)
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE
 );
 
 CREATE TABLE groups_actions(

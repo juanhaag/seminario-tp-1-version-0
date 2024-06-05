@@ -15,12 +15,12 @@ userRouter.post("/user", (req, res) => {
     userController.createUser(req, res)
 }
 );
-userRouter.put("/user/:pid", (req, res) => {
-
+userRouter.put("/user", (req, res) => {
+userController.updateUser(req,res);
 
 })
-userRouter.delete("/user/:pid", (req, res) => {
-    userController()
+userRouter.delete("/user", (req, res) => {
+    userController.deleteUser(req,res);
 
 })
 export default userRouter;

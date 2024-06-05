@@ -8,15 +8,18 @@
   </head>
   <body>
     <div class="container">
-        <header>
-            <nav>
-                <ul>
-                    <li><a href="index.html">Inicio</a></li>
-                    <li><a href="groups.html">Grupos</a></li>
-                    <li><a href="actions.html">Acciones</a></li>
-                </ul>
-            </nav>
-        </header>
+      <header>
+        <nav>
+          <section>
+            <ul>
+              <li><a href="index.html">Inicio</a></li>
+              <li><a href="groups.html">Grupos</a></li>
+              <li><a href="actions.html">Acciones</a></li>
+            </ul>
+          </section>
+         
+        </nav>
+      </header>
       <section class="user-form">
         <h2>Crear Usuario</h2>
         <form id="user-form">
@@ -32,31 +35,126 @@
         <p id="user-created"></p>
       </section>
       <section>
-        <ul id="list-users">
-
-        </ul>
+        <ul id="list-users"></ul>
       </section>
 
     </div>
     <script>
-        const listUsers = document.querySelector("#list-users");
+      const listUsers = document.querySelector("#list-users");
       const formUser = document.querySelector("#user-form");
-        window.addEventListener("load", async () => {
-          await fetch("http://localhost:3001/user")
-            .then((response) => response.json())
-            .then((data) => {
-              data.forEach((user) => {
-                const li = document.createElement("li");
-                li.innerHTML = `${user.name} - ${user.email}`;
-                listUsers.appendChild(li);
-              });
-            })
-            .catch((error) => {
-              console.error("Error:", error);
+      window.addEventListener("load", async () => {
+        await fetch("http://localhost:3001/user")
+          .then((response) => response.json())
+          .then((data) => {
+            data.forEach((user) => {
+              const li = document.createElement("li");
+              li.innerHTML = `
+                <span>${user.name} - ${user.email}</span>
+                <button id='user-${user.id}' data-delete='true'>Eliminar</button>
+                <button class="userModal" data-user-id="${user.id}" data-update="true">Editar Usuario</button>
+                `;
+              listUsers.appendChild(li);
             });
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+          });
+      });
+
+
+listUsers.addEventListener("click", async (event) => {
+  if (event.target.tagName === "BUTTON" && event.target.getAttribute("data-update") === "true"){
+    const userId = event.target.getAttribute("data-user-id");
+    console.log(`Botón clickeado para el usuario ID: ${userId}`);
+
+    listUsers.innerHTML = `
+      <form id="update-form">
+        <label for="name">Nombre:</label>
+        <input type="text" id="name" name="name" required />
+        <label for="password">Contraseña:</label>
+        <input type="password" id="password" name="password" required />
+        <button type="submit">Editar Usuario</button>
+      </form>
+      <div id="user-created"></div>
+      <div id="error-user"></div>
+    `;
+
+    const formUpdate = document.querySelector("#update-form");
+
+    formUpdate.addEventListener("submit", async (event) => {
+      console.log('Formulario enviado'); 
+      event.preventDefault();
+      const formData = new FormData(formUpdate);
+      const userData = {
+        userId: userId,
+        name: formData.get("name"),
+        password: formData.get("password"),
+      };
+      console.log('Datos del formulario:', userData); 
+
+      try {
+        const response = await fetch(`http://localhost:3001/user`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userData),
         });
 
+        const data = await response.json();
+        console.log('Respuesta del servidor:', data); 
 
+        if (data.error) {
+          document.getElementById("error-user").textContent = data.error;
+        } else {
+          document.getElementById("user-created").textContent = data.message;
+          //timeout para recargar la página
+          setTimeout(() => {
+            location.reload();
+          }, 2000);
+        }
+      } catch (error) {
+        document.getElementById("error-user").textContent = `Error: ${error.message}`;
+        console.error("Error:", error);
+      }
+    });
+  }
+});
+
+
+
+      listUsers.addEventListener("click", async (event) => {
+        if (event.target.tagName === "BUTTON"&& event.target.getAttribute("data-delete") === "true"){
+          console.log(event.target.id);
+          const userId = event.target.id.split("-")[1];
+          await fetch(`http://localhost:3001/user`, {
+            method: "delete",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              id: userId,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log(data);
+              if (data.error) {
+                document.getElementById(
+                  "error-user"
+                ).innerHTML = `${data.error} `;
+              } else {
+                document.getElementById(
+                  "user-created"
+                ).innerHTML = `${data.message} `;
+              }
+            })
+            .catch((error) => {
+              document.getElementById("error-user").innerHTML = `${error} `;
+              console.error("Error:", error);
+            });
+        }
+      });
       formUser.addEventListener("submit", async (event) => {
         event.preventDefault();
         const formData = new FormData(formUser);
@@ -71,15 +169,17 @@
             password: formData.get("password"),
           }),
         })
-          .then( (response) =>  response.json())
-          .then( (data) => {
-            console.log( data);
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
             if (data.error) {
               document.getElementById(
                 "error-user"
               ).innerHTML = `${data.error} `;
             } else {
-              document.getElementById("user-created").innerHTML = `${data.message} `;
+              document.getElementById(
+                "user-created"
+              ).innerHTML = `${data.message} `;
             }
           })
           .catch((error) => {

@@ -50,6 +50,17 @@ export default class User {
         const [rows] = await pool.query(query,value);
         return rows;
     }
+    async updateUser(id,user) {
+        const {name, password } = user;
+        const query = 'UPDATE users SET name = ?, password = ? WHERE id = ?';
+        const values = [ name, password, id];
+        try {
+            const [rows] = await pool.query(query, values);
+            return rows;
+        } catch (err) {
+            throw err;
+        }
+    }
     async getUserGroupsAndActions(userId) {
       const query = `
           SELECT 

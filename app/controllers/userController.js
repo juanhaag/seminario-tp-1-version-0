@@ -47,5 +47,24 @@ const getUserGroupsAndActions = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-export default { createUser, getUsers, getUser, getUserGroupsAndActions};
+const deleteUser = async (req, res) => {
+  const { id } = req.body;
+  try {
+    const user = new User();
+    await user.deleteUser(id);
+    res.json({ message: "Usuario eliminado correctamente✅" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+const updateUser = async (req, res) => {
+  const { name, password,userId } = req.body;
+  try {
+    const user = new User();
+    await user.updateUser(userId, { name, password });
+    res.json({ message: "Usuario actualizado correctamente✅" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+}
+export default { createUser, getUsers, getUser, getUserGroupsAndActions, deleteUser, updateUser};
