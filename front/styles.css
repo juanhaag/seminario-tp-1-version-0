@@ -55,6 +55,7 @@ body {
     flex-wrap: wrap;
     justify-content: space-between;
   }
+
 li {
     list-style: none;
 }

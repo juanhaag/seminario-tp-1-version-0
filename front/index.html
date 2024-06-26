@@ -20,6 +20,12 @@
          
         </nav>
       </header>
+      <section>
+        <!-- User Logged -->
+        <div id="user-logged">
+
+        </div>
+      </section>
       <section class="user-form">
         <h2>Crear Usuario</h2>
         <form id="user-form">
@@ -42,6 +48,16 @@
     <script>
       const listUsers = document.querySelector("#list-users");
       const formUser = document.querySelector("#user-form");
+      const userLogged = document.querySelector("#user-logged");
+      if (localStorage.getItem("data")) {
+        const data = JSON.parse(localStorage.getItem("data"));
+        userLogged.innerHTML = `<p>Bienvenido, ${data.user.name}.</p>`;
+        userLogged.innerHTML += `<button id="logout">Cerrar Sesión</button>`;
+        userLogged.querySelector("#logout").addEventListener("click", () => {
+          localStorage.removeItem("data");
+          location.reload();
+        });
+      }
       window.addEventListener("load", async () => {
         await fetch("http://localhost:3001/user")
           .then((response) => response.json())

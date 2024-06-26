@@ -1,15 +1,15 @@
 import User from "../models/userModel.js";
-
+import bcrypt from 'bcrypt';
 const createUser = async (req, res) => {
-  console.log(req.body);
   const { email, name, password } = req.body;
   if (!email || !name || !password) {
     return res.status(400).send("Todos los campos son obligatorios");
   }
+
   try {
-    const newUser = new User();
-    await newUser.createUser({ email, name, password });
-    res.status(200).json({ message: "Usuario creado correctamente✅" });
+    const user = new User();
+    await user.createUser({ email, name, password });
+    res.status(200).json({ message: "Usuario creado correctamente ✅" });
   } catch (err) {
     res.status(500).send({ error: err.message, code: "U001" });
   }
